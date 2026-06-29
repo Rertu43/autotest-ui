@@ -1,5 +1,4 @@
 import pytest
-from playwright.sync_api import expect
 
 courses_link = "https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses"
 create_course_link = "https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/courses/create"
@@ -45,19 +44,13 @@ def test_create_course(courses_list_page, create_course_page):
         estimated_time="2 weeks",
     )
 
-def test_empty_courses_list(chromium_page_with_state):
-    page = chromium_page_with_state
+def test_empty_courses_list(courses_list_page, base_user):
+    courses_list_page.visit(courses_link)
 
-    page.goto(courses_link)
+    courses_list_page.navbar.check_visible(username=base_user.username)
+    courses_list_page.sidebar.check_visible()
 
-    courses_text = page.get_by_test_id("courses-list-toolbar-title-text")
-    expect(courses_text).to_have_text("Courses")
+    courses_list_page.check_visible_courses_title()
+    courses_list_page.check_visible_create_course_button()
+    courses_list_page.check_visible_empty_view()
 
-    no_results_text = page.get_by_test_id("courses-list-empty-view-title-text")
-    expect(no_results_text).to_have_text("There is no results")
-
-    empty_view_icon = page.get_by_test_id("courses-list-empty-view-icon")
-    expect(empty_view_icon).to_be_visible()
-
-    empty_view_description = page.get_by_test_id("courses-list-empty-view-description-text")
-    expect(empty_view_description).to_have_text("Results from the load test pipeline will be displayed here")

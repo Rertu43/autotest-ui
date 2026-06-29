@@ -2,8 +2,6 @@ from typing import Generator, Any
 
 import pytest
 from playwright.sync_api import Playwright, Page, Browser
-from DataGenerator.datagenerator import DataGenerator
-
 
 @pytest.fixture
 def chromium_page(playwright: Playwright) -> Generator[Page, Any, None]:
@@ -12,7 +10,7 @@ def chromium_page(playwright: Playwright) -> Generator[Page, Any, None]:
     browser.close()
 
 @pytest.fixture(scope="session")
-def initialize_browser_state(browser: Browser):
+def initialize_browser_state(browser: Browser, base_user):
     context = browser.new_context()
     page = context.new_page()
 
@@ -21,13 +19,13 @@ def initialize_browser_state(browser: Browser):
     registration_btn = page.get_by_test_id("registration-page-registration-button")
 
     email_input = page.get_by_test_id("registration-form-email-input").locator("input")
-    email_input.fill(DataGenerator.generate_random_email())
+    email_input.fill(base_user.email)
 
     username_input = page.get_by_test_id("registration-form-username-input").locator("input")
-    username_input.fill(DataGenerator.generate_random_username())
+    username_input.fill(base_user.username)
 
     password_input = page.get_by_test_id("registration-form-password-input").locator("input")
-    password_input.fill(DataGenerator.generate_random_password())
+    password_input.fill(base_user.password)
 
     registration_btn.click()
     page.wait_for_url("**/dashboard**")
